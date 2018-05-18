@@ -11,9 +11,9 @@ The script is configured using environment variables
 
 | Variable     |  Description   | 
 |--------------|----------------|
-| PGHOST       | postgresql hostname of airflow
-| PGUSER       | postgresql username of airflow
-| PGPASSWORD   | postgresql password of airflow
+| `PGHOST`     | postgresql hostname of airflow
+| `PGUSER`        | postgresql username of airflow
+| `PGPASSWORD`  | postgresql password of airflow
 | PGDATABASE   | postgresql database of airflow
 | SLACK_URL    | Slack webhook to send notifications
 | SLACK_CHANNEL| Slack channel
@@ -21,7 +21,7 @@ The script is configured using environment variables
 | SCHEDULE     | If not defined the container exits after one execution. If defined the container stay up and run the script periodically
 | TRACE        | If valorized enable debugging on the bash scripts (set -x)
 
-The format for schedule variable is defined by go-cron package, is the standard unix cron syntax
-with the common shortcuts like @hourly, @daily, @weekly.
+The format for schedule variable is defined by [cron package](https://godoc.org/github.com/robfig/cron): 
+you can use the common cron syntax with 6 fields (seconds, minutes, hours, day of month, month, day of week) and also the common shortcuts like `@hourly`, `@daily`, `@weekly`.
 
 
