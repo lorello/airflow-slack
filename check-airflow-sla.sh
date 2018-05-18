@@ -9,7 +9,7 @@
 #   execution_date    | email_sent |         timestamp          | description | notification_sent
 
 #sla_query="SELECT * FROM sla_miss WHERE timestamp > NOW() - INTERVAL '24 hour' AND email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 100;"
-sla_query="SELECT * FROM sla_miss WHERE email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 10;"
+sla_query="SELECT * FROM sla_miss WHERE email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 1000;"
 
 subject="*${SLACK_TO} some tasks are late*"
 
