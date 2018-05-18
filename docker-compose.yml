@@ -1,0 +1,24 @@
+version: 2.3
+
+services:
+    check-sla:
+        image: lorello/airflow-slack
+        cpus: 0.1
+        mem_limit: '8m'
+        restart: unless-stopped
+        stop_grace_period: 1m30s
+        ports:
+            - "8080"
+        environment:
+          #TRACE: 1
+          PGHOST: postgres
+          PGUSER: airflow
+          PGPASSWORD: airflow
+          PGDATABASE: airflow
+          SLACK_URL: 'https://hooks.slack.com/service/XXXXXXX/...'
+          SLACK_CHANNEL: 'alerts'
+          SLACK_FROM: 'Marvin'
+          SLACK_TO: '@alice @bob'
+          SCHEDULE: '@hourly'
+
+
