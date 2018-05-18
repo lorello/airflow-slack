@@ -3,21 +3,20 @@
 [[ $TRACE ]] && set -x 
 
 # example fo results:
-#    floorplan-check|location-to-s3|2018-05-17 08:00:00|f|2018-05-17 12:54:13.903523||f
+#    floorplan-check|location-to-s3-v3|2018-05-17 08:00:00|f|2018-05-17 12:54:13.903523||f
+#    predictions-sort-extract-info|pradence_emea_prediction_Prada_Courchevel_Rue_des_Verdons_TLDBACCU_ff808081515bed3b01515e6488e87cae|2018-05-16 00:00:00|f|2018-05-17 12:54:37.312835||f
+#             task_id            |                                                dag_id                                                |
+#   execution_date    | email_sent |         timestamp          | description | notification_sent
 
-# labels received:
-# task_id | dag_id | execution_date | email_sent | timestamp | description | notification_sent
-
-# should I check only for recent misses? 
 #sla_query="SELECT * FROM sla_miss WHERE timestamp > NOW() - INTERVAL '24 hour' AND email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 100;"
-sla_query="SELECT * FROM sla_miss WHERE email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 1000;"
+sla_query="SELECT * FROM sla_miss WHERE email_sent='f' ORDER BY dag_id, task_id, timestamp LIMIT 10;"
 
 subject="*${SLACK_TO} some tasks are late*"
 
 echo -e "The following task missed their SLA target:\n" > /tmp/message.txt
 
 counter=0
-psql --command "$sla_query" --quiet --tuples-only --no-align  | while read line
+while read line
 do 
     #echo "----------------------"
     #echo $line
@@ -41,8 +40,8 @@ do
 
     # Must be done later, when the slack message has been successfully sent
     echo "UPDATE sla_miss SET email_sent='t' WHERE dag_id='$dag_id' AND task_id='$task_id' AND timestamp='$timestamp';" >> /tmp/dbupdates.sql
-    ((counter++))
-done
+    counter=$((counter + 1))
+done < <(psql --command "$sla_query" --quiet --tuples-only --no-align)
 
 # setup slacktee, if needed
 if [[ ! -f /etc/slacktee.conf ]]; then
@@ -57,7 +56,7 @@ if (( $counter > 0 )); then
 
   if [[ $? -eq 0 ]]; then
     echo "Sent alert for '${counter}' sla misses (setting email_sent = t in database)"
-    cat /tmp/dbupdates.sql | psql airflow
+    cat /tmp/dbupdates.sql | psql airflow --quiet
   fi
 
 else
