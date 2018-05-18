@@ -2,7 +2,7 @@
 
 [[ $TRACE ]] && set -x 
 
-if [[ ! -z $SCHEDULE ]]; then
+if [[ ! -z "$SCHEDULE" ]]; then
   exec /usr/local/bin/go-cron -s "$SCHEDULE" -p 8080 -- /usr/local/bin/check-airflow-sla
 else
   echo '-----------------------------------------------------------------------------------'
