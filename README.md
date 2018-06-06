@@ -2,6 +2,10 @@
 
 Airflow support natively the notification of SLA misses, but only using e-mail.
 
+Example of alert:
+
+![Example](screenshot.png)
+
 ## How it works
 
 The daemon periodically check on the database if there are tasks that missed their sla: this is a native functionality of Airflow. If some task is late, the daemon send a slack message and update the airflow database flagging the miss as _notified_.
